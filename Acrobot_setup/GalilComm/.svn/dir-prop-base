@@ -1,0 +1,17 @@
+K 10
+svn:ignore
+V 226
+lcmt_copleyState.c
+lcmt_copleyState.h
+lcmt_motor_command.c
+lcmt_motor_command.h
+lcmt_motor_state.c
+lcmt_motor_state.h
+lcmt_pendulum_u.c
+lcmt_pendulum_u.h
+lcmt_pendulum_x.c
+lcmt_pendulum_x.h
+lcmt_pendulum_y.c
+lcmt_pendulum_y.h
+
+END

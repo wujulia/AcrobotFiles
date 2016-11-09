@@ -1,0 +1,9 @@
+This is the generic communicator for the Galil CDS-3310 motor controller. The program takes the IP address (or DNS name if it has one) of the motor controller, an LCM channel name to publish state information on, and an LCM channel name to receive torque commands on. 
+
+It polls the motor controller for for a Data Record (containing all the needed state information) and then sets the desired current as fast as it can. LCM command messages are receieved by a separate thread and the command values are pulled from them and written to shared memory using a mutex. 
+
+No unit conversions are done in this program because it is intended to be fully generic. Unit conversions should be performed the specific robot's State Accumulator or State Estimator. It should be noted that unlike the Copley amplifiers the current measurement isn't the actual current being sent to the motor, it's just the command to the current amplifier in volts. Normally this will be set to 1 V/A on the CDS-3310 but that should be verified. This means that the user needs to be more careful about current being limited and giving wrong data to the state estimator. 
+
+In order to compile and run the program the computer must have the GalilTools Communication Library installed. It is available for Linux, Mac, and Windows.
+
+http://www.galilmc.com/support/software-downloads.php

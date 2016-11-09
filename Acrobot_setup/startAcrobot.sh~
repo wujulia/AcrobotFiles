@@ -1,0 +1,8 @@
+#!/bin/bash
+export CLASSPATH=$CLASSPATH:/home/drc/ascatici/Acrobot/LCMTypes/acrobot_types.jar
+export PYTHONPATH=$PYTHONPATH:/home/drc/acsatici/Acrobot/LCMTypes/acrobot_types
+gnome-terminal -e "/home/AcrobotSwingUp/Acrobot_setup/GalilComm/GalilComm 10.66.67.210 acrobot_out acrobot_in"
+gnome-terminal -e "/home/AcrobotSwingUp/Acrobot_setup/SensorAccumulator/SensorAccumulator"
+gnome-terminal -e "/home/AcrobotSwingUp/Acrobot_setup/CommandDisbatch/CommandDisbatch"
+matlab -r "run /home/drc/julia/drake-mposa-distro/drake/addpath_drake.m, checkDependency('lcm'), javaaddpath /home/drc/acsatici/Acrobot/LCMTypes/acrobot_types.jar"
+
