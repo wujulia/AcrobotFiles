@@ -48,13 +48,15 @@ classdef AcrobotFeedbackController < DrakeSystem
         
         %evaluate u_0, x_desired, K for current time t
         current_u_0 = obj.u_0.eval(t);
-        current_x_des = object.x_desired.eval(t);
+        current_x_des = obj.x_desired.eval(t);
         current_K = obj.K.eval(t);
         
         %control function
         u = current_u_0 - current_K*(x - current_x_des);
         
-        
+        umax = 9;
+        u = max(u,-umax);
+        u = min(u,umax);
     end
     
   end

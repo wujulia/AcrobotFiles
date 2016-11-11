@@ -82,8 +82,6 @@ classdef AcrobotPlantSmooth < DrakeSystem
       xdot(3) = qdd(1);
       xdot(4) = qdd(2);
       
-      xdot = xdot';
-      
       if (nargout>1)
         %             [df,d2f,d3f]= dynamicsGradients(obj,t,x,u,nargout-1);
       end
