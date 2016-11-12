@@ -1,0 +1,13 @@
+cmd "CommandDispatch" {
+    exec = "/home/drc/AcrobotSwingUp/Acrobot_setup/CommandDisbatch/CommandDisbatch";
+    host = "localhost";
+}
+cmd "galilcomm" {
+    exec = "/home/drc/AcrobotSwingUp/Acrobot_setup/GalilComm/GalilComm 10.66.67.210 acrobot_out acrobot_in";
+    host = "localhost";
+}
+cmd "SensorAccumulator" {
+    exec = "/home/drc/AcrobotSwingUp/Acrobot_setup/SensorAccumulator/SensorAccumulator";
+    host = "localhost";
+}
+
