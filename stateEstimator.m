@@ -1,5 +1,5 @@
 checkDependency('lcm');
-javaaddpath /home/drc/AcrobotSwingUp/LCMTypes/acrobot_types.jar
+javaaddpath('LCMTypes/acrobot_types.jar')
 
 store_histories = true;
 do_scope = false;

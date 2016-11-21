@@ -1,5 +1,5 @@
 checkDependency('lcm');
-javaaddpath /home/drc/AcrobotSwingUp/LCMTypes/acrobot_types.jar
+javaaddpath('LCMTypes/acrobot_types.jar')
 
 q0 = [pi;0];
 u0 = 0;

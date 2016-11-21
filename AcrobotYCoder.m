@@ -7,7 +7,9 @@ classdef AcrobotYCoder < LCMCoder
           msg = acrobot_types.lcmt_acrobot_y(msg.data);
           y = [msg.theta1; msg.theta2; 0; 0];
           conv = 1/5215;
-          conv = [1/5215; 1/1591.55; 0; 0];
+          ticks_1 = 32768; %2^15;
+          ticks_2 = 10000;
+          conv = [2*pi/ticks_1; 2*pi/ticks_2; 0; 0];
           y = conv.*y;
           %warning('thetadot not implemented yet');
           t = msg.timestamp/1000;
