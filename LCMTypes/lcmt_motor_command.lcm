@@ -1,0 +1,15 @@
+struct lcmt_motor_command
+{
+	int64_t timestamp;
+
+	double command;
+	int8_t command_type;
+
+	/*Command Types
+		4 - Current Command (A)
+		3 - Velocity Command (counts/sec)
+		1 - Position Command (counts)
+		2 - Force Command (counts)*/
+
+	int8_t fault;
+}

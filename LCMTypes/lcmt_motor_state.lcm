@@ -1,0 +1,10 @@
+struct lcmt_motor_state
+{
+	int64_t timestamp;
+
+	double current;
+	double position;
+	double position2;
+
+	int8_t fault;
+}

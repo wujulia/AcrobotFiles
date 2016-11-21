@@ -1,0 +1,12 @@
+
+struct lcmt_copleyState
+{
+	int64_t timestamp;
+
+	int16_t force;
+	int16_t current;
+	double position;
+	double velocity;
+
+	int8_t fault;
+}
