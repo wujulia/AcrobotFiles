@@ -6,7 +6,7 @@ classdef AcrobotInputCoder < LCMCoder
       function [u,t] = decode(obj,msg)
           % decodes the input message
           msg = acrobot_types.lcmt_acrobot_u(msg.data);
-          u = msg.tau;
+          u = -msg.tau;
           t = msg.timestamp/1000;
       end
     

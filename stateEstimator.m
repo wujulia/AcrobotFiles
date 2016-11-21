@@ -62,13 +62,11 @@ while true
       umsg = storage.GetLatestMessage(100);
       
       if ~isempty(umsg)
-        u = -lcm_u_coder.decode(umsg); % Sign flip
+        u = lcm_u_coder.decode(umsg); 
       else
         u = 0;
       end
       
-      q1 = -y(1); % Note the sign flip!
-      q2 = y(2); % Note the sign flip!
       
       if(~isempty(x_last))
         q1dot = (q1-q_last(1))/(t-t_last);
