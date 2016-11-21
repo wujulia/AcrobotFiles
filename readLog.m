@@ -1,8 +1,23 @@
-function readLog(filename,channels,coders)
+function data=readLog(filename,channels,coders)
 
-filename = '/data/mposa/Dropbox (MIT)/AcrobotLogs/11-11-2016/lcmlog-2016-11-11.00'
+
+n = length(channels);
 log = lcm.logging.Log(filename,'r');
+log.seekPositionFraction(.99);
+for i=1:n,
+  data{i} = LCMData();
+  channels{i} = java.lang.String(channels{i}).hashCode();
+end
+
 %%
-while true
-  event = log.readNext;
+while log.getPositionFraction < 1
+  event = log.readNext();
+  code=event.channel.hashCode();
+  for i=1:n,
+    if isequal(code,channels{i})
+      [t,y] = coders{i}.decode(event);
+      data{i}.addData(t,y);
+      break;
+    end
+  end
 end
