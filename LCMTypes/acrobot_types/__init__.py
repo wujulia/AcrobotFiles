@@ -6,3 +6,7 @@ DO NOT MODIFY BY HAND!!!!
 from lcmt_acrobot_u import lcmt_acrobot_u
 from lcmt_acrobot_x import lcmt_acrobot_x
 from lcmt_acrobot_y import lcmt_acrobot_y
+from lcmt_copleyState import lcmt_copleyState
+from lcmt_motor_command import lcmt_motor_command
+from lcmt_motor_state import lcmt_motor_state
+from lcmt_pendulum_y import lcmt_pendulum_y
