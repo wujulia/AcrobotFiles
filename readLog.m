@@ -14,7 +14,7 @@ display_frac = .1;
 %%
 while log.getPositionFraction < 1
   if log.getPositionFraction > display_frac
-    display(sprintf('Log %f percent complete',display_frac));
+    display(sprintf('Log %d percent complete',display_frac*100));
     display_frac = display_frac + .1;
   end
   event = log.readNext();
@@ -28,6 +28,9 @@ while log.getPositionFraction < 1
   end
 end
 
+display('Log 100 percent complete');
+
 for i=1:n,
   data{i}.truncateData();
 end
+
