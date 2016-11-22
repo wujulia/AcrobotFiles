@@ -1,7 +1,7 @@
 checkDependency('lcm');
 javaaddpath('LCMTypes/acrobot_types.jar')
 
-filename = '/data/mposa/Dropbox (MIT)/AcrobotLogs/11-11-2016/lcmlog-2016-11-11.00';
+filename = '/data/mposa/Dropbox (MIT)/AcrobotLogs/11-11-2016/lcmlog-2016-11-11.00.mod';
 channels = {'acrobot_y','acrobot_xhat','acrobot_u','acrobot_out'};
 coders = {AcrobotYCoder(),AcrobotStateCoder(),AcrobotInputCoder(),AcrobotOutCoder()};
 data = readLog(filename,channels,coders,0,.02);
@@ -9,13 +9,18 @@ data = readLog(filename,channels,coders,0,.02);
 %%
 plant = AcrobotPlantSmooth;
 
-t = data{2}.t;
-x = data{2}.data;
+t = data{3}.t;
+
+[~,I] = unique(data{2}.t);
+x = data{2}.data(:,I);
+
 u = data{3}.data;
 y = data{1}.data;
 
-u = interp1(data{3}.t,u,t,'spline','extrap');
 y = interp1(data{1}.t,y',t,'spline','extrap')';
+x = interp1(data{2}.t(I),x',t,'spline','extrap')';
+u = interp1(data{3}.t,u,t,'spline','extrap');
+
 
 y(1:2,:) = y(1:2,:) + repmat(x(1:2,1) - y(1:2,1),1,length(t));
 
@@ -84,9 +89,9 @@ end
 
 figure(1)
 subplot(3,1,1)
-plot(t,x_ekf(3,:),t,x_est(3,:),t,x(3,:)); legend('ekf','est')
+plot(t,x_ekf(3,:),t,x(3,:),t,x(3,:)); legend('ekf','est')
 subplot(3,1,2)
-plot(t,x_ekf(4,:),t,x_est(4,:),t,x(4,:)); legend('ekf','est')
+plot(t,x_ekf(4,:),t,x(4,:),t,x(4,:)); legend('ekf','est')
 subplot(3,1,3)
 plot(t,xdot_ekf(3:4,:))
 
