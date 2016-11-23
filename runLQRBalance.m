@@ -23,7 +23,7 @@ x0_traj = ConstantTrajectory(x0);
 K_traj = ConstantTrajectory(K);
 
 
-uc = AcrobotFeedbackController(u0_traj,K_traj,x0_traj);
+uc = AcrobotFeedbackController(p,u0_traj,K_traj,x0_traj);
 
 disp(sprintf('Starting feedback controller about point (%f,%f). Sending commands now...',q0(1),q0(2)))
 runLCM(uc,[],[]);

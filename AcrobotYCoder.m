@@ -20,7 +20,7 @@ classdef AcrobotYCoder < LCMCoder
           msg.timestamp = t*1000;
           msg.theta1 = -y(1); % sign flip to match ecoder
           msg.theta2 = y(2);
-          warning('tau as output is not implemented yet');
+%           warning('tau as output is not implemented yet');
           msg.tau = 0;
       end
     
@@ -33,7 +33,7 @@ classdef AcrobotYCoder < LCMCoder
     end
     
     function names = coordinateNames(obj)
-        names = [];
+      names = {'theta1','theta2','theta1dot','theta2dot'};
     end
     
   end

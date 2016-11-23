@@ -6,11 +6,11 @@ classdef AcrobotFeedbackController < DrakeSystem
         u_0;
         K;
         x_desired;
-
+        p;
     end
     
   methods
-    function obj = AcrobotFeedbackController(u_0, K, x_desired)
+    function obj = AcrobotFeedbackController(p, u_0, K, x_desired)
         % constructor for a generic feedback controller
         %
         % @param u_0 : A Trajectory object representing input torques.
@@ -27,18 +27,32 @@ classdef AcrobotFeedbackController < DrakeSystem
         
         
         % initialize as DrakeSystem with 4 inputs and 1 output
-        obj = obj@DrakeSystem(0, 0, 4, 1);
+        obj = obj@DrakeSystem(0, 0, 4, 1);       
+        
+        
+        if isnumeric(u_0)
+          u_0 = ConstantTrajectory(u_0);
+        end
+        
+        if isnumeric(K)
+          K = ConstantTrajectory(K);
+        end
+        
+        if isnumeric(x_desired)
+          x_desired = ConstantTrajectory(x_desired);
+        end
         
         % initialize properties
         obj.x_desired = x_desired;
         obj.K = K;
         obj.u_0 = u_0;
+        obj.p = p;
 
-        % setup LCM frames
-        lcmInFrame = LCMCoordinateFrameWCoder('acrobot_xhat', 4, 'x', AcrobotStateCoder);
+        setup LCM frames
+        lcmInFrame = LCMCoordinateFrame('acrobot_xhat', AcrobotStateCoder, 'x');
         obj = obj.setInputFrame(lcmInFrame);
-        
-        lcmOutFrame = LCMCoordinateFrameWCoder('acrobot_u',1,'u',AcrobotInputCoder);
+
+        lcmOutFrame = LCMCoordinateFrame('acrobot_u',AcrobotInputCoder,'u');
         obj = obj.setOutputFrame(lcmOutFrame);
         
     end
