@@ -4,22 +4,24 @@ javaaddpath('LCMTypes/acrobot_types.jar')
 filename = 'AcrobotLogs/Nov30/lcmlog-2016-11-30.02';
 channels = {'acrobot_y','acrobot_xhat','acrobot_u','acrobot_out'};
 coders = {AcrobotYCoder(),AcrobotStateCoder(),AcrobotInputCoder(),AcrobotOutCoder()};
-data = readLog(filename,channels,coders,0,.02);
+data = readLog(filename,channels,coders,0,1);
 
 %%
 plant = AcrobotPlantSmooth;
 
-t = data{3}.t;
+t = data{2}.t;
 
 [~,I] = unique(data{2}.t);
 x = data{2}.data(:,I);
 
-u = data{3}.data;
+[~,Iu] = unique(data{3}.t);
+
+u = data{3}.data(:,Iu);
 y = data{1}.data;
 
 y = interp1(data{1}.t,y',t,'spline','extrap')';
 x = interp1(data{2}.t(I),x',t,'spline','extrap')';
-u = interp1(data{3}.t,u,t,'spline','extrap');
+u = interp1(data{3}.t(Iu),u,t,'spline','extrap');
 
 
 y(1:2,:) = y(1:2,:) + repmat(x(1:2,1) - y(1:2,1),1,length(t));

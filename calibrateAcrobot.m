@@ -1,8 +1,8 @@
 function x_offset = calibrateAcrobot(q0)
 % Calibrate encoders about position q0, likely either [0;0] or [pi;0]
 
-display(sprintf('Calibrating position encoders. Hold acrobot at (%f,%f) and press any key.',q0(1),q0(2)))
-pause
+% display(sprintf('Calibrating position encoders. Hold acrobot at (%f,%f) and press any key.',q0(1),q0(2)))
+% pause
 
 lcm_coder = AcrobotYCoder();
 
