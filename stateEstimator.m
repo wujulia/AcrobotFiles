@@ -56,6 +56,8 @@ while true
   msg = aggregator.getNextMessage(100);  % 100ms timeout
   if (~isempty(msg))
     [y,t]=lcm_y_coder.decode(msg);
+    q1 = y(1);
+    q2 = y(2);
     if t-t_last > eps
       
       %u = lcm_coder.decodeU(getNextMessage(aggregatoru));

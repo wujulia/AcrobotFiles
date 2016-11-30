@@ -19,8 +19,8 @@ while isempty(msg)
 end
 
 [y,t]=lcm_coder.decode(msg);
-q1 = -y(1); % Note the sign flip!
-q2 = y(2); % Note the sign flip!
+q1 = y(1);
+q2 = y(2);
 
 % calibrate about upright
 x_offset = [q1;q2;0;0] - [q0;0;0];

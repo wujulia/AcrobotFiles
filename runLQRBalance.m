@@ -12,7 +12,7 @@ x0 = [q0;0;0];
 [A,B] = p.linearize(0,x0,u0);
 % xdot ~ A*(x-x0) + B*(u-u0)
 
-Q = diag([10;10;1;1]);
+Q = diag([10;10;10;10]);
 R = 10;
 [K,S] = lqr(A,B,Q,R);
 
