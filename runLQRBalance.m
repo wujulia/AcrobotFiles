@@ -12,10 +12,9 @@ x0 = [q0;0;0];
 [A,B] = p.linearize(0,x0,u0);
 % xdot ~ A*(x-x0) + B*(u-u0)
 
-Q = diag([10;10;1;1]);
-R = 10;
+Q = diag([10;10;10;10]);
+R = 5;
 [K,S] = lqr(A,B,Q,R);
-
 % K = [0; -1; 0; -.1]';
 K
 u0_traj = ConstantTrajectory(u0);

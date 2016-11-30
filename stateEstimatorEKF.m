@@ -3,13 +3,13 @@
 checkDependency('lcm');
 javaaddpath('LCMTypes/acrobot_types.jar')
 
-q_cal = [pi; 0];
+q_cal = [0; 0];
 
 % Calibrate first
 x_offset = calibrateAcrobot(q_cal);
 % x_offset = zeros(4,1);
 
-storage = LCMStorage('acrobot_u');
+storage = LCMStorage('acrobot_u'); 
 
 p = AcrobotPlantSmooth;
 
@@ -31,9 +31,6 @@ Q = diag([1e-7;1e-7;.01;.01]); %process noise covariance. May need to be tuned.
 
 u_last = 0;
 
-% Observer gain
-% completely trust position measurements
-L = diag([1;1;.08;.08]);
 
 % Get initial time
 msg = aggregator.getNextMessage(1000);
@@ -49,8 +46,9 @@ t_last = t0;
 % Estimator loop
 while true
   msg = aggregator.getNextMessage(100);  % 100ms timeout
-  if (~isempty(msg))
+   if (~isempty(msg))
     [y,t]=lcm_y_coder.decode(msg);
+    y = y-x_offset;
     if t-t_last > eps
       
       umsg = storage.GetLatestMessage(0);
@@ -82,7 +80,7 @@ while true
       u_last = u;
                   
       
-      statemsg = lcm_x_coder.encode(t,x_Est);
+      statemsg = lcm_x_coder.encode(t,x_est);
       lc.publish('acrobot_xhat',statemsg);      
     else
       display('LCM timeout, no message received')
