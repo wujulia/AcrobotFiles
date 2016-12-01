@@ -1,27 +1,30 @@
 checkDependency('lcm');
 javaaddpath('LCMTypes/acrobot_types.jar')
 
-filename = 'AcrobotLogs/Nov30/lcmlog-2016-11-30.02';
+% filename = 'AcrobotLogs/11-11-2016/lcmlog-2016-11-11.00';
+filename = 'AcrobotLogs/11-30-2016/successfulSine.mod';
 channels = {'acrobot_y','acrobot_xhat','acrobot_u','acrobot_out'};
 coders = {AcrobotYCoder(),AcrobotStateCoder(),AcrobotInputCoder(),AcrobotOutCoder()};
-data = readLog(filename,channels,coders,0,1);
+data = readLog(filename,channels,coders,0.48,.77);
 
 %%
 plant = AcrobotPlantSmooth;
 
-t = data{2}.t;
+t = unique(data{1}.t);
 
-[~,I] = unique(data{2}.t);
-x = data{2}.data(:,I);
+[~,Ix] = unique(data{2}.t);
+x = data{2}.data(:,Ix);
 
 [~,Iu] = unique(data{3}.t);
-
 u = data{3}.data(:,Iu);
-y = data{1}.data;
 
-y = interp1(data{1}.t,y',t,'spline','extrap')';
-x = interp1(data{2}.t(I),x',t,'spline','extrap')';
-u = interp1(data{3}.t(Iu),u,t,'spline','extrap');
+[~,Iy] = unique(data{1}.t);
+y = data{1}.data(:,Iy);
+
+
+y = interp1(data{1}.t(Iy),y',t,'linear','extrap')';
+x = interp1(data{2}.t(Ix),x',t,'linear','extrap')';
+u = interp1(data{3}.t(Iu),u,t,'linear','extrap');
 
 
 y(1:2,:) = y(1:2,:) + repmat(x(1:2,1) - y(1:2,1),1,length(t));
@@ -41,6 +44,8 @@ v_diff = [zeros(2,1) v_diff];
 
 vdot_diff = [diff(v(1,:))./diff(t);diff(v(2,:))./diff(t)];
 vdot_diff = [zeros(2,1) vdot_diff];
+
+vdot_diff_filt = [filter(hamming(5),sum(hamming(5)),vdot_diff(1,:)); filter(hamming(5),sum(hamming(5)),vdot_diff(2,:))];
 
 %% mimic state estimate
 x_est = x*0;
@@ -73,7 +78,7 @@ R = diag([1e-4;3e-4]); % measurement covariance, from tick resolution
 
 for i=2:length(t),
   [xdot_ekf(:,i),dxdot] = plant.dynamics(0,x_ekf(:,i-1),u(:,i-1));
-  [xdot_test(:,i)] = plant.dynamics(0,diag([1;1;1;1])*x_ekf(:,i-1),K_lqr*([pi;0;0;0] - x_ekf(:,i-1)));
+  [xdot_test(:,i)] = plant.dynamics(0,x_ekf(:,i-1),u(:,i-1));
   F = eye(4) + (t(i) - t(i-1))*dxdot(:,2:5);
   
   % predict
@@ -91,9 +96,9 @@ end
 
 figure(1)
 subplot(3,1,1)
-plot(t,x_ekf(3,:),t,x(3,:),t,x(3,:)); legend('ekf','est')
+plot(t,x_ekf(3,:),t,x(3,:),t,x(3,:),t,v_diff(1,:)); legend('ekf','est')
 subplot(3,1,2)
-plot(t,x_ekf(4,:),t,x(4,:),t,x(4,:)); legend('ekf','est')
+plot(t,x_ekf(4,:),t,x(4,:),t,x(4,:),t,v_diff(2,:)); legend('ekf','est')
 subplot(3,1,3)
 plot(t,xdot_ekf(3:4,:))
 
