@@ -5,7 +5,11 @@ classdef AcrobotStateCoder < LCMCoder
     
       function [x,t] = decode(obj,msg)
           % decodes the state message
-          msg = acrobot_types.lcmt_acrobot_x(msg);
+          if isnumeric(msg)
+            msg = acrobot_types.lcmt_acrobot_x(msg);
+          else
+            msg = acrobot_types.lcmt_acrobot_x(msg.data);
+          end
           x = [msg.theta1; msg.theta2; msg.theta1Dot; msg.theta2Dot];
           t = msg.timestamp/1000;
       end

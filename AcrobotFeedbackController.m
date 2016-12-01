@@ -2,14 +2,16 @@ classdef AcrobotFeedbackController < DrakeSystem
     % A generic feedback controller meant for the Acrobot 
     
     properties
+      plant
         u_0;
         K;
         x_desired;
         storage
+        t_zero % period at start to output zero
     end
     
   methods
-    function obj = AcrobotFeedbackController(u_0, K, x_desired)
+    function obj = AcrobotFeedbackController(plant,u_0, K, x_desired, t_zero)
         % constructor for a generic feedback controller
         %
         % @param u_0 : A Trajectory object representing input torques.
@@ -28,7 +30,13 @@ classdef AcrobotFeedbackController < DrakeSystem
         % initialize as DrakeSystem with 4 inputs and 1 output
         obj = obj@DrakeSystem(0, 0, 4, 1);
         
+        if nargin < 5
+          t_zero = 10;
+        end
+        obj.t_zero = t_zero;
+        
         % initialize properties
+        obj.plant = plant;
         obj.x_desired = x_desired;
         obj.K = K;
         obj.u_0 = u_0;
@@ -36,10 +44,10 @@ classdef AcrobotFeedbackController < DrakeSystem
         obj.storage = LCMStorage('acrobot_storage');
         obj.storage.storage_struct.t_offset = [];
 
-        % setup LCM frames
-        lcmInFrame = LCMCoordinateFrameWCoder('acrobot_xhat', 4, 'x', AcrobotStateCoder);
-        obj = obj.setInputFrame(lcmInFrame);
         
+        obj = obj.setInputFrame(plant.getStateFrame);
+        
+        % setup LCM frame
         lcmOutFrame = LCMCoordinateFrameWCoder('acrobot_u',1,'u',AcrobotInputCoder);
         obj = obj.setOutputFrame(lcmOutFrame);
         
@@ -47,7 +55,12 @@ classdef AcrobotFeedbackController < DrakeSystem
 
     function u = output(obj,t,~,x)
         if isempty(obj.storage.storage_struct.t_offset)
-          obj.storage.storage_struct.t_offset = t;
+          obj.storage.storage_struct.t_offset = t + obj.t_zero;
+        end
+        
+        if t < 0
+          u = 0;
+          return;
         end
         
         t_offset = obj.storage.storage_struct.t_offset;
@@ -65,6 +78,7 @@ classdef AcrobotFeedbackController < DrakeSystem
         umax = 9;
         u = max(u,-umax);
         u = min(u,umax);
+        u
     end
     
   end

@@ -5,7 +5,7 @@ javaaddpath('LCMTypes/acrobot_types.jar')
 filename = 'AcrobotLogs/11-30-2016/successfulSine.mod';
 channels = {'acrobot_y','acrobot_xhat','acrobot_u','acrobot_out'};
 coders = {AcrobotYCoder(),AcrobotStateCoder(),AcrobotInputCoder(),AcrobotOutCoder()};
-data = readLog(filename,channels,coders,0.48,.77);
+data = readLog(filename,channels,coders,.5,.77);
 
 %%
 plant = AcrobotPlantSmooth;
@@ -102,5 +102,52 @@ plot(t,x_ekf(4,:),t,x(4,:),t,x(4,:),t,v_diff(2,:)); legend('ekf','est')
 subplot(3,1,3)
 plot(t,xdot_ekf(3:4,:))
 
-figure(2)
-plot(t,xdot_test(3:4,:))
+% figure(2)
+% plot(t,xdot_test(3:4,:))
+
+figure(3)
+subplot(2,1,1)
+plot(t,vdot_diff(1,:),t,xdot(3,:))
+subplot(2,1,2)
+plot(t,vdot_diff(2,:),t,xdot(4,:))
+
+%% Bias EKF state estimate
+C = [eye(2) zeros(2,4)]; % measurement model
+x_bekf = zeros(6,length(t));
+xdot_bekf = zeros(6,length(t));
+x_bekf(:,1) = [x(:,1);0;0];
+P = zeros(6,6,length(t));
+
+T = [eye(4) [eye(2);zeros(2)]]; % transform x to [q;v]
+
+P(:,:,1) = diag([1;1;1;1;.05;.05]);  % initial covariance
+Q = diag([1e-7;1e-7;.01;.01;1e-4;1e-4]); %process noise covariance
+R = diag([1e-4;3e-4]); % measurement covariance, from tick resolution
+
+for i=2:length(t),
+  [xdot_bekf(1:4,i),dxdot] = plant.dynamics(0,T*x_bekf(:,i-1),u(:,i-1));
+  xdot_bekf(5:6,i) = zeros(2,1);
+  F = eye(6) + (t(i) - t(i-1))*[dxdot(:,2:5)*T; zeros(2,6)];
+  
+  % predict
+  x_pred = x_bekf(:,i-1) + (t(i) - t(i-1))*xdot_bekf(:,i);
+  P_pred = F*P(:,:,i-1)*F' + Q;
+  
+  %update
+  y_resid = y(1:2,i) - C*x_pred;
+  S = C*P_pred*C' + R;
+  K = P_pred*C'/S;
+  
+  x_bekf(:,i) = x_pred + K*y_resid;
+  P(:,:,i) = (eye(6) - K*C)*P_pred;
+end
+
+%%
+figure(4)
+subplot(2,1,1)
+plot(t,vdot_diff(1,:),t,xdot_bekf(3,:))
+subplot(2,1,2)
+plot(t,vdot_diff(2,:),t,xdot_bekf(4,:))
+
+figure(5)
+plot(t,x_bekf(5:6,:))

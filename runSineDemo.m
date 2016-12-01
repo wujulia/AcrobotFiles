@@ -28,5 +28,12 @@ Qf = Q;
 K_traj = -ltvsys.D;
 
 %%
-uc = AcrobotFeedbackController(u_traj,K_traj,x_traj);
-runLCM(uc,[],[]);
+uc = AcrobotFeedbackController(p,u_traj,K_traj,x_traj);
+R_ekf = diag([1e-4;3e-4]); % measurement covariance, from tick resolution
+Q_ekf = diag([1e-7;1e-7;.01;.01;1e-4;1e-4]); %process noise covariance
+estimator = AcrobotBEKFEstimator(p,R_ekf,Q_ekf);
+sys = estimator.cascade(uc);
+P0 = diag([1;1;1;1;.05;.05]);  % initial covariance
+init_state = estimator.wrapState(0,[x0;0;0],P0);
+display('Starting sine demo commands now')
+runLCM(sys,init_state,[]);
