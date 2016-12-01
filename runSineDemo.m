@@ -5,7 +5,9 @@ q0 = [0;0];
 u0 = 0;
 
 x0 = [q0;0;0];
-
+% Calibrate first
+x_offset = calibrateAcrobot(q0);
+q_offset = x_offset(1:2);
 
 %%
 p = AcrobotPlantSmooth;
@@ -31,7 +33,7 @@ K_traj = -ltvsys.D;
 uc = AcrobotFeedbackController(p,u_traj,K_traj,x_traj);
 R_ekf = diag([1e-4;3e-4]); % measurement covariance, from tick resolution
 Q_ekf = diag([1e-7;1e-7;.01;.01;1e-4;1e-4]); %process noise covariance
-estimator = AcrobotBEKFEstimator(p,R_ekf,Q_ekf);
+estimator = AcrobotBEKFEstimator(p,R_ekf,Q_ekf,q_offset);
 sys = estimator.cascade(uc);
 P0 = diag([1;1;1;1;.05;.05]);  % initial covariance
 init_state = estimator.wrapState(0,[x0;0;0],P0);

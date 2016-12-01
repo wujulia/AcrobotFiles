@@ -4,13 +4,14 @@ classdef AcrobotBEKFEstimator < DrakeSystem
     C = [eye(2) zeros(2,4)]; % measurement model    R
     Q
     R
-    T = [eye(4) [eye(2);zeros(2)]];
+    T = [eye(4) 0*[eye(2);zeros(2)]];
     lcm = [];
     lcm_x_coder
+    offset
   end
   
   methods
-    function obj = AcrobotBEKFEstimator(plant, R, Q, outputLCM)
+    function obj = AcrobotBEKFEstimator(plant, R, Q, offset, outputLCM)
       % initialize as DrakeSystem with 6^2+6+1 discrete states, 3 inputs and
       % 4 outputs
       obj = obj@DrakeSystem(0, 6*6+6+1, 3, 4);
@@ -18,8 +19,9 @@ classdef AcrobotBEKFEstimator < DrakeSystem
       obj.plant = plant;
       obj.R = R;
       obj.Q = Q;
+      obj.offset = offset;
       
-      if nargin < 4
+      if nargin < 5
         outputLCM = true;
       end
       if outputLCM
@@ -37,7 +39,8 @@ classdef AcrobotBEKFEstimator < DrakeSystem
     end
     
     function state_n = update(obj,t,state,y)
-      [q_meas,u] = unwrapY(obj,y);      
+      [q_meas,u] = unwrapY(obj,y);   
+      q_meas = q_meas - obj.offset;
       [t_last,x,P] = unwrapState(obj,state);
       
       dt = t - t_last;      
@@ -60,7 +63,6 @@ classdef AcrobotBEKFEstimator < DrakeSystem
       P = (eye(6) - K*obj.C)*P_pred;
       
       state_n = wrapState(obj,t,x_n,P);
-      
     end
     
     function x = output(obj,t,state,y)
